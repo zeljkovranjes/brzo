@@ -39,3 +39,8 @@ p {
     max-width: none;
   }
 }
+
+/* Use original browser stylesheet */
+* {
+  all: revert;
+}
