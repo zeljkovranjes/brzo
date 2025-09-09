@@ -1,12 +1,57 @@
+import { stripe } from '@better-auth/stripe'
 import { betterAuth } from 'better-auth'
 import { Database } from 'bun:sqlite'
+import { Stripe } from 'stripe'
 import { transporter } from '~/libs/mailer'
 
 // Kysely, setup.
 const database = new Database(process.env.DATABASE_URL)
 
+// Stripe, setup.
+const stripeClient = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+  apiVersion: '2025-08-27.basil',
+})
+
 // Better-Auth, setup.
 export const auth = betterAuth({
+  /////////////////////
+  // Plugins
+
+  plugins: [
+    stripe({
+      stripeClient,
+      stripeWebhookSecret: process.env.STRIPE_WEBHOOK_SECRET!,
+      createCustomerOnSignUp: true,
+      getCheckoutSessionParams: async ({}) => {
+        return {
+          params: {
+            tax_id_collection: {
+              enabled: true,
+            },
+            automatic_tax: {
+              enabled: true,
+            },
+          },
+        }
+      },
+      subscriptions: {
+        enabled: true,
+        requireEmailVerification: true,
+        // dynamically get all plans from stripe
+        plans: async () => {
+          // stripe prices api
+          const prices = await stripeClient.prices.list({
+            active: true,
+            expand: ['data.product'],
+          })
+          const plans = prices
+          // returns EVERYTHIGN you can always map plans and return the data you want.
+          return plans.data
+        },
+      },
+    }),
+  ],
+
   /////////////////////
   // Database
 
