@@ -84,6 +84,58 @@ export const auth = betterAuth({
   },
 
   /////////////////////
+  // User
+
+  user: {
+    additionalFields: {
+      accountType: {
+        type: 'string',
+        input: false,
+      },
+    },
+    changeEmail: {
+      enabled: true,
+      // @ts-ignore
+      sendChangeEmailVerification: async ({ user, newEmail, url, token }) => {
+        try {
+          await transporter.sendMail({
+            from: process.env.MAILER_AWS_SES_SOURCE,
+            to: newEmail,
+            subject: 'Verify Your New Email Address',
+            text: `Hello ${user.name || ''},
+    
+              You requested to change your email address. Please verify your new email by clicking the link below:
+              
+                ${url}`,
+          })
+        } catch (err) {
+          console.error('Error sending change email verification:', err)
+        }
+      },
+    },
+    deleteUser: {
+      enabled: true,
+      // @ts-ignore
+      sendDeleteAccountVerification: async ({ user, url, token }) => {
+        try {
+          await transporter.sendMail({
+            from: process.env.MAILER_AWS_SES_SOURCE,
+            to: user.email,
+            subject: 'Confirm Account Deletion',
+            text: `Hello ${user.name || ''},
+    
+              You requested to delete your account. Please confirm this action by clicking the link below:
+    
+                ${url}`,
+          })
+        } catch (err) {
+          console.error('Error sending account deletion verification email:', err)
+        }
+      },
+    },
+  },
+
+  /////////////////////
   // Advanced
 
   advanced: {
