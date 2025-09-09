@@ -1,5 +1,6 @@
 import { stripe } from '@better-auth/stripe'
 import { betterAuth } from 'better-auth'
+import { emailHarmony } from 'better-auth-harmony'
 import { Database } from 'bun:sqlite'
 import { Stripe } from 'stripe'
 import { transporter } from '~/libs/mailer'
@@ -19,6 +20,7 @@ export const auth = betterAuth({
 
   plugins: [
     // more information on stripe: https://www.better-auth.com/docs/plugins/stripe
+    emailHarmony(),
     stripe({
       stripeClient,
       stripeWebhookSecret: process.env.STRIPE_WEBHOOK_SECRET!,

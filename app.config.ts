@@ -1,8 +1,11 @@
-import { defineConfig } from "@solidjs/start/config";
-import tailwindcss from "@tailwindcss/vite";
+import { defineConfig } from '@solidjs/start/config'
+import tailwindcss from '@tailwindcss/vite'
 
 export default defineConfig({
-    vite: {
-        plugins: [tailwindcss()]
-    }
-});
+  vite: {
+    ssr: {
+      noExternal: ['better-auth-harmony', 'validator'],
+    },
+    plugins: [tailwindcss()],
+  },
+})
