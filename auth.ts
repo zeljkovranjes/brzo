@@ -18,6 +18,7 @@ export const auth = betterAuth({
   // Plugins
 
   plugins: [
+    // more information on stripe: https://www.better-auth.com/docs/plugins/stripe
     stripe({
       stripeClient,
       stripeWebhookSecret: process.env.STRIPE_WEBHOOK_SECRET!,
